@@ -217,3 +217,81 @@ public class DynamicTableValidation {
         driver.quit();
     }
 }
+
+DYNAMIC_TABLE.html
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dynamic Table</title>
+
+<script>
+function sortTable() {
+    let table = document.getElementById("employeeTable");
+    let rows = Array.from(table.rows).slice(1);
+
+    rows.sort((a,b) =>
+        a.cells[1].innerHTML.localeCompare(b.cells[1].innerHTML)
+    );
+
+    rows.forEach(row => table.appendChild(row));
+}
+
+function filterTable() {
+    let input = document.getElementById("search").value.toLowerCase();
+    let rows = document.getElementById("employeeTable").rows;
+
+    for(let i=1; i<rows.length; i++) {
+        let name = rows[i].cells[1].innerHTML.toLowerCase();
+
+        if(name.includes(input))
+            rows[i].style.display="";
+        else
+            rows[i].style.display="none";
+    }
+}
+</script>
+
+</head>
+
+<body>
+
+<h2>Employee Details</h2>
+
+<input type="text" id="search" placeholder="Search Name">
+<button onclick="filterTable()">Filter</button>
+
+<br><br>
+
+<table border="1" id="employeeTable">
+
+<tr>
+<th>ID</th>
+<th onclick="sortTable()">Name (Sort)</th>
+<th>Department</th>
+</tr>
+
+<tr>
+<td>101</td>
+<td>John</td>
+<td>Testing</td>
+</tr>
+
+<tr>
+<td>102</td>
+<td>Alice</td>
+<td>Development</td>
+</tr>
+
+<tr>
+<td>103</td>
+<td>David</td>
+<td>Database</td>
+</tr>
+<tr>
+<td>104</td>
+<td>Bob</td>
+<td>Testing</td>
+</tr>
+</table>
+</body>
+</html>
