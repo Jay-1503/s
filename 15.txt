@@ -1,0 +1,208 @@
+DriverManager.java:
+package utils;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class DriverManager {
+
+    private static WebDriver driver;
+
+    public static void createDriver() {
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+    }
+
+    public static WebDriver getDriver() {
+        return driver;
+    }
+
+    public static void quitDriver() {
+        if (driver != null) {
+            driver.quit();
+            driver = null;
+        }
+    }
+}
+
+BaseTest.java:
+package base;
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import utils.DriverManager;
+
+public class BaseTest {
+
+    @BeforeMethod
+    public void setUp() {
+        DriverManager.createDriver();
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        DriverManager.quitDriver();
+    }
+}
+
+LoginPage.java:
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class LoginPage {
+
+    private WebDriver driver;
+
+    private By username = By.id("username");
+    private By password = By.id("password");
+    private By loginButton = By.id("login");
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void enterUsername(String usernameValue) {
+        driver.findElement(username).sendKeys(usernameValue);
+    }
+
+    public void enterPassword(String passwordValue) {
+        driver.findElement(password).sendKeys(passwordValue);
+    }
+
+    public void clickLogin() {
+        driver.findElement(loginButton).click();
+    }
+
+    public void login(String usernameValue, String passwordValue) {
+        enterUsername(usernameValue);
+        enterPassword(passwordValue);
+        clickLogin();
+    }
+}
+
+HomePage.java
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class HomePage {
+
+    private WebDriver driver;
+
+    private By homeTitle = By.tagName("h1");
+
+    public HomePage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public String getHomeTitle() {
+        return driver.findElement(homeTitle).getText();
+    }
+}
+
+
+LoginTest.java
+Right-click tests → New → Class → LoginTest.:
+package tests;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+import base.BaseTest;
+import pages.LoginPage;
+import pages.HomePage;
+import utils.DriverManager;
+
+public class LoginTest extends BaseTest {
+
+    @Test
+    public void validLoginTest() {
+
+        DriverManager.getDriver().get(
+            "https://the-internet.herokuapp.com/login"
+        );
+
+        LoginPage loginPage = new LoginPage(DriverManager.getDriver());
+
+        loginPage.enterUsername("tomsmith");
+        loginPage.enterPassword("SuperSecretPassword!");
+        loginPage.clickLogin();
+
+        HomePage homePage = new HomePage(DriverManager.getDriver());
+
+        String title = homePage.getHomeTitle();
+
+        Assert.assertEquals(title, "Secure Area");
+    }
+}
+
+LoginPage.java for the Demonstration Site:
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class LoginPage {
+
+    private WebDriver driver;
+
+    private By username = By.id("username");
+    private By password = By.id("password");
+    private By loginButton = By.cssSelector("button[type='submit']");
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public void enterUsername(String usernameValue) {
+        driver.findElement(username).sendKeys(usernameValue);
+    }
+
+    public void enterPassword(String passwordValue) {
+        driver.findElement(password).sendKeys(passwordValue);
+    }
+
+    public void clickLogin() {
+        driver.findElement(loginButton).click();
+    }
+
+    public void login(String usernameValue, String passwordValue) {
+        enterUsername(usernameValue);
+        enterPassword(passwordValue);
+        clickLogin();
+    }
+}
+
+
+HomePage.java:
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+
+public class HomePage {
+
+    private WebDriver driver;
+
+    private By homeTitle = By.cssSelector("div.example h2");
+
+    public HomePage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    public String getHomeTitle() {
+        return driver.findElement(homeTitle).getText();
+    }
+}
+
+
+13. Run the Test
+1. Save all Java files using Ctrl + S.
+2. Right-click LoginTest.java.
+3. Select Run As → TestNG Test.
+4. Chrome should open automatically.
+5. The test opens the login page, enters credentials, clicks Login, reads the Secure Area heading, and performs a TestNG assertion.
+6. If the assertion passes, TestNG shows the test as PASSED.
+OUTPUT
