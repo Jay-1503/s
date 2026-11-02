@@ -1,0 +1,2 @@
+C:SeleniumGrid>java -jar selenium-server-4.44.0. jar hub
+c:SeleniumGrid>java -jar selenium-server-4.44.0. jar node -- hub http://localhost: 4444
